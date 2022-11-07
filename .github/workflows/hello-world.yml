@@ -1,0 +1,110 @@
+name: Build hello-world application
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_next:
+        description: 'Whether to run the subsequent workflows after triggering this one manully.'
+        required: false
+        default: false
+  push:
+    paths:
+      - 'hello-world/**'
+      - '!hello-world/README.md'
+      - '.github/workflows/hello-world.yml'
+  # schedule:
+    # Runs "at minute 55 past every hour" (see https://crontab.guru)
+    # - cron: '55 * * * *'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: ['camera1','camera2','camera3']
+      max-parallel: 1 #to run one job in parrallel if needed
+        
+    env:
+      EXREPO: acap-native-examples
+      EXNAME: hello-world
+      EAPNAME: hello_world
+      EXDIR: acap/examples/$EXNAME
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get the architecture from the camera
+        run: |
+          ok=$(curl -s --noproxy '*' --anyauth -u user:"pass" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://ip:port/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
+          echo  "response from curl= $ok" 
+          ok=${ok#*Architecture}
+          echo "test=$(echo $ok | cut -d '"' -f 3)" >> $GITHUB_ENV
+          echo ok=$(echo $ok | cut -d '"' -f 3)
+      - name: Test the env variable  
+        id: grabInfoId
+        run: | 
+          echo $test     
+
+      - name: Build ${{ env.example }} application
+        env:
+          example: ${{ env.EXNAME }}
+          imagetag: ${{ env.EXREPO }}_${{ env.EXNAME }}:1.0
+          EXNAME: hello-world
+          test: ${{env.test}}
+        run: |
+          cd $EXNAME
+          echo $test 
+          echo ARCH=$test
+          docker image rm -f $imagetag
+          docker build --no-cache --tag $imagetag --build-arg ARCH=$test .
+          docker cp $(docker create $imagetag):/opt/app ./build
+          myimg=$(docker images | awk '{print $1}' | awk 'NR==2')
+          echo $myimg
+          docker ps  -a --format 'CONTAINER ID : {{.ID}} | Name: {{.Names}} | Image:  {{.Image}} '        
+          echo "here what the build file contains"
+          ls build
+
+      - name: upload the app to the camera
+        env: 
+          test: ${{env.test}}
+          eapfile: ${{ env.EAPNAME }}_1_0_0_${{env.test}}.eap
+        run: |
+          echo ${test}
+          echo $eapfile
+          cd $EXNAME/build
+          echo "The local directory \"hello-world\" contains the following files:"
+          ls
+          upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
+          echo $upload
+         
+
+      - name: start the application
+        run: |
+          curl -s -v -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=hello_world"
+          echo "contents of sys-logs so far"
+          curl -s --noproxy '*' --anyauth -u user:"pass" -k --header "Content-Type: application/json" http://ip:port/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=hello_world
+ 
+
+      # - name: Stop the application
+      #   run: | 
+      #     curl -v --noproxy '*' --anyauth -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=hello_world"
+      #     echo "Please refresh hemsida, so you can see the application status is stopped"  
+      #     echo "time to refresh the page"
+      #     for i in {1..8} 
+      #     do
+      #       sleep 1
+      #       echo "$i"
+      #     done
+   
+      # - name: remove the application
+      #   run: |
+      #     curl -s -v --noproxy '*' -k --anyauth -u user:"pass" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=hello_world"
+      
+      - name: Trigger next workflow
+        if: ${{ (github.event_name != 'workflow_dispatch' && success()) || (github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_next && success()) }}
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{secrets.REPO_GHA_PAT}}
+          repository: nodeFade/acap-native-sdk-examples-ci-sandbox
+          event-type: axoverlay
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
+
+    
+          
