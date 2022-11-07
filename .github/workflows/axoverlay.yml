@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.event.client_payload.sha }}
       - name: Get the architecture of the camera
         run: |
-            ok=$(curl -s --noproxy '*' --anyauth -u usr:"psswd" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://ip:port/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
+            ok=$(curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
             echo  "response from curl= $ok" 
             ok=${ok#*Architecture}
             echo "test=$(echo $ok | cut -d '"' -f 3)" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ jobs:
           cd $EXNAME/build
           echo "The local directory \"axoverlay\" contains the following files:"
           ls
-          upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u usr:"psswd" "http://ip:port/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
+          upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
           echo $upload 
         # cd /app
         # echo "The local directory \"axoverlay/app\" contains the following files:"
@@ -79,9 +79,9 @@ jobs:
       - name: start the application
         run: |
           cd $EXNAME/build
-          curl -s -v -u usr:"psswd" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=axoverlay"
+          curl -s -v -u usr:"psswd" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=axoverlay"
           echo "contents of sys-logs so far"
-          curl -s --noproxy '*' --anyauth -u usr:"psswd" -k --header "Content-Type: application/json" http://ip:port/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=axoverlay
+          curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=axoverlay
           echo "time to refresh the page"
           for i in {1..8} 
           do
@@ -91,7 +91,7 @@ jobs:
       
       # - name: Stop the application
       #   run: | 
-      #     curl -s -v --noproxy '*' --anyauth -u usr:"psswd" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=axoverlay"
+      #     curl -s -v --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=axoverlay"
       #     echo "Please refresh hemsida, so you can see the application status is stopped"  
       #     echo "time to refresh the page"
       #     for i in {1..8} 
@@ -102,6 +102,6 @@ jobs:
 
       # - name: remove the application
       #   run: |
-      #     curl -s -v --noproxy '*' -k --anyauth -u usr:"psswd" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=axoverlay"
+      #     curl -s -v --noproxy '*' -k --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=axoverlay"
           
 
