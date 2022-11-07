@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.event.client_payload.sha }}
       - name: Get the architecture of the camera
         run: |
-            ok=$(curl -s --noproxy '*' --anyauth -u usr:"psswd" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://85.235.16.137:8012/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
+            ok=$(curl -s --noproxy '*' --anyauth -u usr:"psswd" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://ip:port/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
             echo  "response from curl= $ok" 
             ok=${ok#*Architecture}
             echo "test=$(echo $ok | cut -d '"' -f 3)" >> $GITHUB_ENV
