@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        arch: ['camera1','camera2','camera3']
+        arch: ['camera1','camera2']
       max-parallel: 1 #to run one job in parrallel if needed
         
     env:
-      EXREPO: acap-native-examples
+      EXREPO: acap-native-sdk-examples-ci-sandbox-fbi
       EXNAME: hello-world
       EAPNAME: hello_world
       EXDIR: acap/examples/$EXNAME
@@ -32,7 +32,7 @@ jobs:
 
       - name: Get the architecture from the camera
         run: |
-          ok=$(curl -s --noproxy '*' --anyauth -u user:"pass" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://ip:port/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
+          ok=$(curl -s --noproxy '*' --anyauth -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
           echo  "response from curl= $ok" 
           ok=${ok#*Architecture}
           echo "test=$(echo $ok | cut -d '"' -f 3)" >> $GITHUB_ENV
@@ -71,20 +71,20 @@ jobs:
           cd $EXNAME/build
           echo "The local directory \"hello-world\" contains the following files:"
           ls
-          upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
+          upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" "http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
           echo $upload
          
 
       - name: start the application
         run: |
-          curl -s -v -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=hello_world"
+          curl -s -v -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" "http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=hello_world"
           echo "contents of sys-logs so far"
-          curl -s --noproxy '*' --anyauth -u user:"pass" -k --header "Content-Type: application/json" http://ip:port/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=hello_world
+          curl -s --noproxy '*' --anyauth -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=hello_world
  
 
       # - name: Stop the application
       #   run: | 
-      #     curl -v --noproxy '*' --anyauth -u user:"pass" "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=hello_world"
+      #     curl -v --noproxy '*' --anyauth -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" "http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=hello_world"
       #     echo "Please refresh hemsida, so you can see the application status is stopped"  
       #     echo "time to refresh the page"
       #     for i in {1..8} 
@@ -95,14 +95,14 @@ jobs:
    
       # - name: remove the application
       #   run: |
-      #     curl -s -v --noproxy '*' -k --anyauth -u user:"pass" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://ip:port/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=hello_world"
+      #     curl -s -v --noproxy '*' -k --anyauth -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=hello_world"
       
       - name: Trigger next workflow
         if: ${{ (github.event_name != 'workflow_dispatch' && success()) || (github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_next && success()) }}
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{secrets.REPO_GHA_PAT}}
-          repository: nodeFade/acap-native-sdk-examples-ci-sandbox
+          repository: nodeFade/acap-native-sdk-examples-ci-sandbox-fbi
           event-type: axoverlay
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
 
