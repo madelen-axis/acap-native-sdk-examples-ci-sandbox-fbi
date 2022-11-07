@@ -79,7 +79,7 @@ jobs:
       - name: start the application
         run: |
           cd $EXNAME/build
-          curl -s -v -u usr:"psswd" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=axoverlay"
+          curl -s -v -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=start&package=axoverlay"
           echo "contents of sys-logs so far"
           curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=axoverlay
           echo "time to refresh the page"
