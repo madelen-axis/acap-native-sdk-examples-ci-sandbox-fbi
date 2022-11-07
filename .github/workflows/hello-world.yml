@@ -81,7 +81,7 @@ jobs:
           echo "contents of sys-logs so far"
           curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/systemlog.cgi?appname=hello_world
  
-
+      
       # - name: Stop the application
       #   run: | 
       #     curl -v --noproxy '*' --anyauth -u ${{CAMERA_USERNAME}}:"${{CAMERA_PASSWORD}}" "http://${{CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=hello_world"
