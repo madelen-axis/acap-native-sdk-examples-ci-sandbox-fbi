@@ -61,7 +61,7 @@ jobs:
           echo "here what the build file contains"
           ls build
 
-      - name: upload the app to the camera
+      - name: upload the app to the camera 
         env: 
           test: ${{env.test}}
           eapfile: ${{ env.EAPNAME }}_1_0_0_${{env.test}}.eap
