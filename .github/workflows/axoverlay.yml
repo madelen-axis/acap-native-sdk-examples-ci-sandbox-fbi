@@ -74,8 +74,7 @@ jobs:
         # cd /app
         # echo "The local directory \"axoverlay/app\" contains the following files:"
         # ls
-            
-
+             
       - name: start the application
         run: |
           cd $EXNAME/build
