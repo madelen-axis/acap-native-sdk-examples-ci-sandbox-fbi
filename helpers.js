@@ -1,5 +1,5 @@
 // grabEl = grabElement
-function grabEl(cssSelector) {
+export function grabEl(cssSelector) {
     return document.querySelector(cssSelector);
   }
   

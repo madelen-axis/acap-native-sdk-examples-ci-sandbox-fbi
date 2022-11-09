@@ -1,5 +1,5 @@
 const {expect} = require('@jest/globals');
-// import  {grabEl} from '.\helpers.js';
+import  { grabEl, grabEls, listen } from '.\helpers.js';
 
 // function getElementsById(ids) {
 //     var idList = ids.split(" ");
