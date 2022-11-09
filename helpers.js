@@ -1,16 +1,16 @@
 // grabEl = grabElement
-export function grabEl(cssSelector) {
+function grabEl(cssSelector) {
     return document.querySelector(cssSelector);
   }
   
   // grabEls = grabElements
-  export function grabEls(cssSelector) {
+function grabEls(cssSelector) {
     return document.querySelectorAll(cssSelector);
   }
   
   // listen = add an event handler that triggers
   // when we match a certain css selector
-  export function listen(eventType, cssSelector, func) {
+function listen(eventType, cssSelector, func) {
     // delegated event handling
     // listen to the events on the whole body
     // but filter if we should do something
@@ -28,3 +28,7 @@ export function grabEl(cssSelector) {
       func(event);
     });
   }
+
+if (typeof module === 'object' && module.exports){
+  module.exports = {grabEl, grabEls, listen}
+}
