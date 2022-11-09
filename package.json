@@ -1,0 +1,23 @@
+{
+  "name": "acap-native-sdk-examples-ci-sandbox-fbi",
+  "version": "1.0.0",
+  "description": "AXIS Camera Application Platform (ACAP) is an open application platform from Axis. It provides a development platform for software-based solutions and systems built around Axis devices. ACAP is available for various types of Axis products such as cameras, speakers and intercoms.",
+  "main": "helpers.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodeFade/acap-native-sdk-examples-ci-sandbox-fbi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nodeFade/acap-native-sdk-examples-ci-sandbox-fbi/issues"
+  },
+  "homepage": "https://github.com/nodeFade/acap-native-sdk-examples-ci-sandbox-fbi#readme",
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
+}
