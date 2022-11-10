@@ -15,9 +15,9 @@ on:
     # Runs "at minute 55 past every hour" (see https://crontab.guru)
     # - cron: '55 * * * *'
 concurrency:
-  group: conrcy-on-push-${{github.head_ref}}
-  #group: build-and-test
-  cancel-in-progress: true
+  #group: conrcy-on-push-${{github.head_ref}}
+  group: build-and-test
+  #cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
