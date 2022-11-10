@@ -77,9 +77,7 @@ jobs:
           ls
           upload=$(curl --noproxy  '*' --anyauth -s -S -k -F packfil=@${eapfile} -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/admin/applications/upload.cgi?reload_page=yes")
           echo $upload 
-        # cd /app
-        # echo "The local directory \"axoverlay/app\" contains the following files:"
-        # ls
+
              
       - name: start the application
         run: |
