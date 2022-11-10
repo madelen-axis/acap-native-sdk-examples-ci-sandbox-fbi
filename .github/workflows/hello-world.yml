@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: output HeadRef
         run: echo "${{github.head_ref}}"
-        
+
       - name: Get the architecture from the camera
         run: |
           ok=$(curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
@@ -110,7 +110,4 @@ jobs:
           repository: nodeFade/acap-native-sdk-examples-ci-sandbox-fbi
           event-type: axoverlay
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
-
-
-          
 
