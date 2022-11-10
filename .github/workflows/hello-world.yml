@@ -110,4 +110,3 @@ jobs:
           repository: nodeFade/acap-native-sdk-examples-ci-sandbox-fbi
           event-type: axoverlay
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
-
