@@ -106,4 +106,3 @@ jobs:
       #   run: |
       #     curl -s -v --noproxy '*' -k --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getAllProperties"}' "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=remove&package=axoverlay"
           
-
