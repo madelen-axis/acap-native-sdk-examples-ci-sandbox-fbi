@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: output HeadRef
-        run: echo "${{github.head_ref}}"
+        run: echo "github-workflow >> ${{ github.workflow }}- headref >> ${{ github.ref }}"
 
       - name: Get the architecture from the camera
         run: |

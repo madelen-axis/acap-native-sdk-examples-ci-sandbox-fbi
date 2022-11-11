@@ -34,7 +34,7 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.sha }}
       - name: output HeadRef
-        run: echo "${{github.head_ref}}"
+        run: echo "github-workflow >> ${{ github.workflow }}- headref >> ${{ github.ref }}"
       - name: Get the architecture of the camera
         run: |
             ok=$(curl -s --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" -k --header "Content-Type: application/json" --request POST --data '{"apiVersion":"1.0", "method":"getProperties", "params": {"propertyList": ["Architecture"]}}' http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/basicdeviceinfo.cgi)
