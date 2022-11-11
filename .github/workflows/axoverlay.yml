@@ -91,6 +91,7 @@ jobs:
             echo "$i"
           done
       
+      
       # - name: Stop the application
       #   run: | 
       #     curl -s -v --noproxy '*' --anyauth -u ${{secrets.CAMERA_USERNAME}}:"${{secrets.CAMERA_PASSWORD}}" "http://${{secrets.CAMERA_IP}}/${{matrix.arch}}/axis-cgi/applications/control.cgi?action=stop&package=axoverlay"
