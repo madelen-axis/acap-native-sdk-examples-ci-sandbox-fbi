@@ -16,8 +16,8 @@ on:
     # - cron: '55 * * * *'
 concurrency:
   #group: conrcy-on-push-${{github.head_ref}}
-  group: build-and-test
-  #cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
